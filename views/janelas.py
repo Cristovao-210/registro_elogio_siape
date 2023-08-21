@@ -50,4 +50,4 @@ def tela_inicial():
            
             
     janela.close()
-    return [processo_sei, lista_de_servidores, texto_elogio]
+    return {"SEI": processo_sei, "SERVIDORES": lista_de_servidores, "ELOGIO": texto_elogio}

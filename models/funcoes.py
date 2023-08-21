@@ -66,7 +66,7 @@ def tratar_elementos_ligacao_txt(txt):
 
 
 
-def selecionar_servidores(dados_servidores): # arquivo listaServidores
+def selecionar_servidores(dados_servidores, servidores_elogio): # arquivo listaServidores
 
   servidores = pd.read_csv(f'{dados_servidores}.csv', sep=",", encoding='latin-1')
 
@@ -78,18 +78,16 @@ def selecionar_servidores(dados_servidores): # arquivo listaServidores
   for nome_serv, mat_siape in zip(list(servidores['NOME']), list(servidores['SIAPE'])):
       dicionario_mat_siape[nome_serv] = mat_siape
 
-  with open('servidoresElogio.txt', 'r', encoding='utf-8') as serv:
-      servidores_elogio = serv.read()
-      for nome in servidores_elogio.split("\n"):
-          nome_servidor = str(tratar_elementos_ligacao_txt(nome.strip())).upper()
-          if nome_servidor in list(servidores['NOME']):
-              lista_mat_siape.append(dicionario_mat_siape.get(nome_servidor))
-              log_servidores_cadastrados.append(f'{nome_servidor} - {dicionario_mat_siape.get(nome_servidor)}')
-          else:
-              log_servidores_nao_cadastrados.append(f'{nome_servidor}')
-      
-      return [lista_mat_siape, log_servidores_nao_cadastrados, log_servidores_cadastrados] # retorna uma lista com 3 listas dentro
+  for nome in servidores_elogio:
+    nome_servidor = str(tratar_elementos_ligacao_txt(str(nome).strip())).upper()
+    if nome_servidor in list(servidores['NOME']):
+        lista_mat_siape.append(dicionario_mat_siape.get(nome_servidor))
+        log_servidores_cadastrados.append(f'{nome_servidor} - {dicionario_mat_siape.get(nome_servidor)}')
+    else:
+        log_servidores_nao_cadastrados.append(f'{nome_servidor}')
   
+  return [lista_mat_siape, log_servidores_nao_cadastrados, log_servidores_cadastrados] # retorna uma lista com 3 listas dentro
+
 
 
 def gerar_log(serv_cadastrados, serv_nao_cadastrados):
