@@ -95,7 +95,7 @@ def gerar_log(serv_cadastrados, serv_nao_cadastrados):
   with open('servidores_cadastrados.txt', 'a', encoding='utf-8') as na_lista:
     na_lista.write(f'NOME DOS SERVIDORES QUE TIVERAM O ELOGIO REGISTRADO: \n\n')
     for serv_cad in serv_cadastrados:
-      na_lista.write(f'{serv_cad}')
+      na_lista.write(f'{serv_cad}\n')
 
   # log dos nomes que NÃO foram localizados na base de dados
   with open('servidores_nao_cadastrados.txt', 'a', encoding='utf-8') as nao_lista:
@@ -123,7 +123,7 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
   # cada linha tem 60 caracteres
   tam_linha = 60
   # preenchendo o primeiro elemento com o ínicio do texto
-  lista_texto = [elogio[0:60].lower()]
+  lista_texto = [str(elogio[0:60]).lower()]
 
   # preenchendo a lista com as linhas do texto
   for i in range(iteracoes):
@@ -149,7 +149,8 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
 
   # inserindo a matricula do servidor
   for matricula in matriculas_servidores:
-    pyautogui.write(matricula)
+    time.sleep(sleep)
+    pyautogui.write(str(matricula))
     time.sleep(sleep)
     pyautogui.press("enter")
     time.sleep(sleep)
