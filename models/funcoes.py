@@ -65,6 +65,24 @@ def tratar_elementos_ligacao_txt(txt):
     return txt
 
 
+def info_sobre_programa():
+  msg_info = ''' ######   INFORMAÇÕES IMPORTANTES   ######
+
+  1 - Antes de iniciar o programa é necessário que a tela do Hod (SIAPE TELA PRETA) esteja ativa.
+
+  2- Também é necessário que NÃO esteja mais na página de abertura. Para isso, após a abertura do TELA PRETA, tecle F12.
+
+  3 - Durante a execução do programa não será possível usar o mouse e o teclado do computador.
+
+  4 - Quando o registro terminar será informado se algum servidor não foi cadastrado.
+
+  5 - Caso seja necessário interromper a execução do programa, posicione o cursor do mouse no canto superior esquerdo da sua tela principal.
+  Costuma ser logo acima do ícone da lixeira na área de trabalho.
+  
+  ATENÇÃO!! Caso os itens 1 e 2 ainda não tenham sido executados, clique em CANCELAR, faça o solicitado e execute o programa novamente.
+  '''
+  return pyautogui.confirm(msg_info)
+
 
 def selecionar_servidores(dados_servidores, servidores_elogio): # arquivo listaServidores
 
@@ -105,14 +123,8 @@ def gerar_log(serv_cadastrados, serv_nao_cadastrados):
 
 
 
-
 def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
-  # ENTRADA DE DADOS PARA:
-    # MATRÍCULA
-    # NÚMERO DO SEI
-    # TEXTO DO ELEOGIO
 
-  #matricula = "01932081" 
   processo_sei = f"PROCESSO SEI Nº {num_sei}"
   sleep = 1
 
@@ -132,10 +144,18 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
     tam_linha += 60
     lista_texto.append(texto[0:60])
 
-  pyautogui.PAUSE = 0.3
-
+  # intervalo entre os comandos
+  pyautogui.PAUSE = 1
   # posicionando o mouse dentro do hod
-  pyautogui.click(x=445, y=351)
+  
+  pyautogui.keyDown('alt')
+  pyautogui.press('tab')
+  pyautogui.keyUp('alt')
+  pyautogui.PAUSE = 3
+  pyautogui.press('..img/SIAPE2.PNG')
+
+  # Diminuindo o intervalo entre os comandos
+  pyautogui.PAUSE = 0.3
 
   # posicionando o cursor na barra de comandos
   pyautogui.press("F2")

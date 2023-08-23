@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import pyautogui
 
 def tela_inicial():
     layout = [
@@ -14,6 +15,8 @@ def tela_inicial():
     ]
 
     janela = sg.Window("REGISTRO DE ELOGIO NO SIAPE", layout)
+
+    
 
     while True:
         evento, valores = janela.read()
@@ -47,7 +50,7 @@ def tela_inicial():
                 janela["servidores"].update("")
                 janela["txt_elogio"].update("")
                 break
-           
+        
             
     janela.close()
     return {"SEI": processo_sei, "SERVIDORES": lista_de_servidores, "ELOGIO": texto_elogio}
