@@ -53,4 +53,62 @@ def tela_inicial():
         
             
     janela.close()
+    
     return {"SEI": processo_sei, "SERVIDORES": lista_de_servidores, "ELOGIO": texto_elogio}
+
+
+# mensagens a serem utilizadas no programa
+def infos_programa(tema_info):
+  '''
+  1 - Informações sobre o programa
+  2 - Nenhum servidor localizado na base de dados
+  3 - Alguns servidores não localizados na base de dados
+  4 - Base de dados não localizada
+  5 - TODOS OS SERVIDORES CADASTRADOS COM SUCESSO!
+  '''
+  match tema_info:
+    case 1:
+      msg_info = '''                 ######   INFORMAÇÕES IMPORTANTES   ######
+
+      1 - Antes de iniciar o programa é necessário que a tela do Hod (SIAPE TELA PRETA) esteja ATIVA, MAXIMIZADA e em PRIMEIRO PLANO em qualquer uma das telas do computador.
+
+      2- Também é necessário que NÃO esteja mais na página de abertura. Para isso, após a abertura da TELA PRETA, tecle F12.
+
+      3 - Durante a execução do programa não será possível usar o mouse e o teclado do computador.
+
+      4 - Quando o registro terminar será informado se algum servidor não foi cadastrado.
+
+      5 - Caso seja necessário interromper a execução do programa, posicione o cursor do mouse no canto superior esquerdo da sua tela principal.
+      Costuma ser logo acima do ícone da lixeira na área de trabalho.
+      
+      ATENÇÃO!! Caso os itens 1 e 2 ainda não tenham sido executados, clique em CANCELAR, faça o solicitado e execute o programa novamente.
+      '''
+    case 2:
+      msg_info = '''                 ######   ATENÇÃO   ######
+
+      Nenhum dos servidores listados foi localizado na base de dados.
+      Será gerado um relatório com o nome desses servidores na pasta onde se encontra o executável deste programa.
+
+      '''
+    case 3:
+      msg_info = '''                 ######   ATENÇÃO   ######
+
+      Alguns dos servidores listados não foram localizados na base de dados.
+      Será gerado um relatório com o nome desses servidores na pasta onde se encontra o executável deste programa.
+      '''
+    case 4:
+      msg_info = '''                 ######   ATENÇÃO   ######
+
+      O arquivo listaServidores.csv não foi localizado.
+      Este arquivo precisa estar na pasta onde se encontra o executável deste programa.
+
+      '''
+    case 5:
+      msg_info = '''                 ######   ATENÇÃO   ######
+
+      O ELOGIO FOI CADASTRADO PARA TODOS OS SERVIDORES!
+      Será gerado um relatório com o nome desses servidores na pasta onde se encontra o executável deste programa.
+
+      '''
+
+  return pyautogui.confirm(msg_info)

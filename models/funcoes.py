@@ -1,6 +1,7 @@
 import pandas as pd
-import pyautogui
+import pyautogui, pygetwindow
 import time
+from views.janelas import infos_programa
 
 # tratando preposições e conectivos em geral que aparecem o a inicial maiúscula
 def tratar_elementos_ligacao_txt(txt):
@@ -65,34 +66,20 @@ def tratar_elementos_ligacao_txt(txt):
     return txt
 
 
-def info_sobre_programa():
-  msg_info = ''' ######   INFORMAÇÕES IMPORTANTES   ######
+# pegando a matrícula dos servidores para registrar o elogio
+def selecionar_servidores(dados_servidores, servidores_elogio): 
 
-  1 - Antes de iniciar o programa é necessário que a tela do Hod (SIAPE TELA PRETA) esteja ativa.
-
-  2- Também é necessário que NÃO esteja mais na página de abertura. Para isso, após a abertura do TELA PRETA, tecle F12.
-
-  3 - Durante a execução do programa não será possível usar o mouse e o teclado do computador.
-
-  4 - Quando o registro terminar será informado se algum servidor não foi cadastrado.
-
-  5 - Caso seja necessário interromper a execução do programa, posicione o cursor do mouse no canto superior esquerdo da sua tela principal.
-  Costuma ser logo acima do ícone da lixeira na área de trabalho.
-  
-  ATENÇÃO!! Caso os itens 1 e 2 ainda não tenham sido executados, clique em CANCELAR, faça o solicitado e execute o programa novamente.
-  '''
-  return pyautogui.confirm(msg_info)
-
-
-def selecionar_servidores(dados_servidores, servidores_elogio): # arquivo listaServidores
-
-  servidores = pd.read_csv(f'{dados_servidores}.csv', sep=",", encoding='latin-1')
+  try:
+    # carregando dados
+    servidores = pd.read_csv(f'{dados_servidores}.csv', sep=",", encoding='latin-1')
+  except:
+    # base de dados não encontrada (listaServidores.csv)
+    infos_programa(4)
 
   dicionario_mat_siape = {}
   lista_mat_siape = []
   log_servidores_nao_cadastrados = []
   log_servidores_cadastrados = []
-
   for nome_serv, mat_siape in zip(list(servidores['NOME']), list(servidores['SIAPE'])):
       dicionario_mat_siape[nome_serv] = mat_siape
 
@@ -103,70 +90,67 @@ def selecionar_servidores(dados_servidores, servidores_elogio): # arquivo listaS
         log_servidores_cadastrados.append(f'{nome_servidor} - {dicionario_mat_siape.get(nome_servidor)}')
     else:
         log_servidores_nao_cadastrados.append(f'{nome_servidor}')
-  
-  return [lista_mat_siape, log_servidores_nao_cadastrados, log_servidores_cadastrados] # retorna uma lista com 3 listas dentro
+
+  return {"MATRICULAS": lista_mat_siape,
+          "SERV_NAO_LOCALIZADOS": log_servidores_nao_cadastrados,
+          "SERV_LOCALIZADOS": log_servidores_cadastrados} # retorna um dicionário com 3 listas dentro
 
 
 
-def gerar_log(serv_cadastrados, serv_nao_cadastrados):
+def gerar_log(serv_cadastrados, serv_nao_cadastrados, processo_sei):
   # log dos nomes que foram localizados na base de dados
-  with open('servidores_cadastrados.txt', 'a', encoding='utf-8') as na_lista:
-    na_lista.write(f'NOME DOS SERVIDORES QUE TIVERAM O ELOGIO REGISTRADO: \n\n')
-    for serv_cad in serv_cadastrados:
-      na_lista.write(f'{serv_cad}\n')
-
+  if len(serv_cadastrados) > 0:
+    with open(f'servidores_cadastrados_{processo_sei}.txt', 'a', encoding='utf-8') as na_lista:
+      na_lista.write(f'NOME DOS SERVIDORES QUE TIVERAM O ELOGIO REGISTRADO: \n\n')
+      for serv_cad in serv_cadastrados:
+        na_lista.write(f'{serv_cad}\n')
   # log dos nomes que NÃO foram localizados na base de dados
-  with open('servidores_nao_cadastrados.txt', 'a', encoding='utf-8') as nao_lista:
-     nao_lista.write(f'O ELOGIO NAO FOI REGISTRADO PARA: \n\n')
-     for serv_nao_cad in serv_nao_cadastrados:
-      nao_lista.write(f'{serv_nao_cad}\n')
-
+  if len(serv_nao_cadastrados) > 0:
+    with open(f'servidores_nao_cadastrados_{processo_sei}.txt', 'a', encoding='utf-8') as nao_lista:
+      nao_lista.write(f'O ELOGIO NAO FOI REGISTRADO PARA: \n\n')
+      for serv_nao_cad in serv_nao_cadastrados:
+        nao_lista.write(f'{serv_nao_cad}\n')
+  # Avisando sobre o relatório com o nome dos servidores NÃO CADASTRADOS
+  if len(serv_cadastrados) > 0 and len(serv_nao_cadastrados) > 0:
+    infos_programa(3)
+  elif len(serv_cadastrados) > 0 and len(serv_nao_cadastrados) == 0:
+    infos_programa(5)
+  elif len(serv_cadastrados) == 0 and len(serv_nao_cadastrados) > 0:
+    infos_programa(2)
 
 
 def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
 
   processo_sei = f"PROCESSO SEI Nº {num_sei}"
   sleep = 1
-
   elogio = texto_elogio
-
   # descobrindo a quantidade de linhas para saber quantas vezes repetir
   iteracoes = int(len(elogio) / 60)
   # cada linha tem 60 caracteres
   tam_linha = 60
   # preenchendo o primeiro elemento com o ínicio do texto
   lista_texto = [str(elogio[0:60]).lower()]
-
   # preenchendo a lista com as linhas do texto
   for i in range(iteracoes):
     # removendo as partes do texto que já estão na lista
     texto = str(elogio.replace(elogio[0:tam_linha], "")).lower()
     tam_linha += 60
     lista_texto.append(texto[0:60])
-
   # intervalo entre os comandos
-  pyautogui.PAUSE = 1
-  # posicionando o mouse dentro do hod
-  
-  pyautogui.keyDown('alt')
-  pyautogui.press('tab')
-  pyautogui.keyUp('alt')
   pyautogui.PAUSE = 3
-  pyautogui.press('..img/SIAPE2.PNG')
-
+  # posicionando o mouse dentro do hod
+  janela = pygetwindow.getWindowsWithTitle(title='Terminal 3270 - A - AWVADS8R')[0]
+  janela.activate()
   # Diminuindo o intervalo entre os comandos
   pyautogui.PAUSE = 0.3
-
   # posicionando o cursor na barra de comandos
   pyautogui.press("F2")
   time.sleep(sleep)
-
   # digitando o comando para acessar a função desejada
   pyautogui.write(">CAINELOGIO")
   time.sleep(sleep)
   pyautogui.press("enter")
   time.sleep(sleep)
-
   # inserindo a matricula do servidor
   for matricula in matriculas_servidores:
     time.sleep(sleep)
@@ -174,18 +158,14 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
     time.sleep(sleep)
     pyautogui.press("enter")
     time.sleep(sleep)
-
     # dando tab até chegar na posição de digitar o número do SEI
     for repete in range(8):
         pyautogui.press("tab")
-
     # inserindo o número do SEI para chegar a descrição
     pyautogui.write(processo_sei)
     pyautogui.press("enter")
     time.sleep(sleep)
-
     # inserindo a descrição 
-    #pyautogui.click(x=384, y=381)
     pyautogui.press("enter")
     time.sleep(sleep)
     count_rows = 0
@@ -197,8 +177,6 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
         time.sleep(sleep)
         pyautogui.press("F8")
         time.sleep(sleep)
-
-
     # salvando
     # pyautogui.press("F3")
     # time.sleep(sleep)
