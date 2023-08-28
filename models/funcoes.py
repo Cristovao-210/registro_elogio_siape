@@ -99,6 +99,7 @@ def selecionar_servidores(dados_servidores, servidores_elogio):
 
 def gerar_log(serv_cadastrados, serv_nao_cadastrados, processo_sei):
   # log dos nomes que foram localizados na base de dados
+  processo_sei = str(processo_sei).replace("/","").replace("-","").replace(".","")
   if len(serv_cadastrados) > 0:
     with open(f'servidores_cadastrados_{processo_sei}.txt', 'a', encoding='utf-8') as na_lista:
       na_lista.write(f'NOME DOS SERVIDORES QUE TIVERAM O ELOGIO REGISTRADO: \n\n')
@@ -178,10 +179,10 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
         pyautogui.press("F8")
         time.sleep(sleep)
     # salvando
-    # pyautogui.press("F3")
-    # time.sleep(sleep)
-    # pyautogui.write("S")
-    # time.sleep(sleep)
-    # pyautogui.press("enter")
+    pyautogui.press("F3")
+    time.sleep(sleep)
+    pyautogui.write("S")
+    time.sleep(sleep)
+    pyautogui.press("enter")
 
 

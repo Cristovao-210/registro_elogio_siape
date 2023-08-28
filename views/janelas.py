@@ -65,6 +65,7 @@ def infos_programa(tema_info):
   3 - Alguns servidores não localizados na base de dados
   4 - Base de dados não localizada
   5 - TODOS OS SERVIDORES CADASTRADOS COM SUCESSO!
+  6 - Quando o usuário encerrar o programa.
   '''
   match tema_info:
     case 1:
@@ -108,6 +109,12 @@ def infos_programa(tema_info):
 
       O ELOGIO FOI CADASTRADO PARA TODOS OS SERVIDORES!
       Será gerado um relatório com o nome desses servidores na pasta onde se encontra o executável deste programa.
+
+      '''
+    case 6:
+      msg_info = '''                 ######   ATENÇÃO   ######
+
+      AÇÃO CANCELADA PELO USUÁRIO. NENHUM REGISTRO EFETUADO!
 
       '''
 
