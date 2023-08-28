@@ -130,11 +130,11 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
   # cada linha tem 60 caracteres
   tam_linha = 60
   # preenchendo o primeiro elemento com o ínicio do texto
-  lista_texto = [str(elogio[0:60]).lower()]
+  lista_texto = [str(elogio[0:60]).upper()]
   # preenchendo a lista com as linhas do texto
   for i in range(iteracoes):
     # removendo as partes do texto que já estão na lista
-    texto = str(elogio.replace(elogio[0:tam_linha], "")).lower()
+    texto = str(elogio.replace(elogio[0:tam_linha], "")).upper()
     tam_linha += 60
     lista_texto.append(texto[0:60])
   # intervalo entre os comandos
@@ -184,5 +184,5 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
     pyautogui.write("S")
     time.sleep(sleep)
     pyautogui.press("enter")
-
+  pyautogui.press('F3')
 
