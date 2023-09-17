@@ -80,7 +80,7 @@ def selecionar_servidores(dados_servidores, servidores_elogio):
   lista_mat_siape = []
   log_servidores_nao_cadastrados = []
   log_servidores_cadastrados = []
-  for nome_serv, mat_siape in zip(list(servidores['NOME']), list(servidores['SIAPE'])):
+  for nome_serv, mat_siape in zip(list(servidores['NOME']), list(servidores['SIAPECAD'])):
       dicionario_mat_siape[nome_serv] = mat_siape
 
   for nome in servidores_elogio:

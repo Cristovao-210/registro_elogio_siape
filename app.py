@@ -13,4 +13,5 @@ if resposta == "OK":
             registrar_elogio(dados_da_tela['SEI'], dados_da_tela['ELOGIO'], servidores_selecionados["MATRICULAS"])
             gerar_log(servidores_selecionados["SERV_LOCALIZADOS"], servidores_selecionados["SERV_NAO_LOCALIZADOS"], dados_da_tela['SEI'])
     except:
-        infos_programa(6) # Cancelado pelo usuário
+        # Cancelado pelo usuário
+        infos_programa(6) 
