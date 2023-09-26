@@ -65,7 +65,7 @@ def infos_programa(tema_info):
   3 - Alguns servidores não localizados na base de dados
   4 - Base de dados não localizada
   5 - TODOS OS SERVIDORES CADASTRADOS COM SUCESSO!
-  6 - Quando o usuário encerrar o programa.
+  6 - Quando o usuário encerrar o programa. Ou quando o tela preta não estiver aberta.
   '''
   match tema_info:
     case 1:
