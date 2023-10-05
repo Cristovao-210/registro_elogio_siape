@@ -88,11 +88,11 @@ def tratar_elementos_ligacao_txt(txt):
 
 
 # pegando a matrícula dos servidores para registrar o elogio
-def selecionar_servidores(servidores_elogio): # dados_servidores, 
+def selecionar_servidores(dados_servidores, servidores_elogio): # dados_servidores, 
 
   try:
     # carregando dados
-    servidores = carregar_dados_googlesheets('servidores') #pd.read_csv(f'{dados_servidores}.csv', sep=",", encoding='latin-1')
+    servidores = dados_servidores#carregar_dados_googlesheets('servidores') #pd.read_csv(f'{dados_servidores}.csv', sep=",", encoding='latin-1')
   except:
     # base de dados não encontrada (listaServidores.csv)
     infos_programa(4)
@@ -180,6 +180,10 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
   time.sleep(sleep)
   # inserindo a matricula do servidor
   for matricula in matriculas_servidores:
+
+    # COLOCAR AQUI A VERIFICAÇÃO PARA SABER SE A MATRÍCULA JÁ TEM ESSE NÚMERO DE SEI REGISTRADO
+    # SE JÁ TIVER... CONTINUE...
+
     time.sleep(sleep)
     pyautogui.write(str(matricula))
     time.sleep(sleep)
@@ -210,5 +214,7 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
     pyautogui.write("S")
     time.sleep(sleep)
     pyautogui.press("enter")
+    # COLOCAR AQUI O REGISTRO DA MATRÍCULA E DO NÚMERO SEI
+
   pyautogui.press('F3')
 

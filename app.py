@@ -1,12 +1,15 @@
 from views.janelas import tela_inicial
-from models.funcoes import registrar_elogio, selecionar_servidores, gerar_log, infos_programa
+from models.funcoes import registrar_elogio, selecionar_servidores, gerar_log, infos_programa, carregar_dados_googlesheets
 
 
 resposta = infos_programa(1)
+
 if resposta == "OK":
     try:
+        dados_googlesheets_servidores = carregar_dados_googlesheets('servidores')
+        dados_googlesheets_SEI = carregar_dados_googlesheets('sei_cadastrado')
         dados_da_tela = tela_inicial()
-        servidores_selecionados = selecionar_servidores(dados_da_tela['SERVIDORES']) # "listaServidores", 
+        servidores_selecionados = selecionar_servidores(dados_googlesheets_servidores, dados_da_tela['SERVIDORES']) # "listaServidores", 
         if len(servidores_selecionados["SERV_LOCALIZADOS"]) == 0:
             gerar_log(servidores_selecionados["SERV_LOCALIZADOS"], servidores_selecionados["SERV_NAO_LOCALIZADOS"], dados_da_tela['SEI'])
         else:
