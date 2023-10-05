@@ -2,6 +2,27 @@ import pandas as pd
 import pyautogui, pygetwindow
 import time
 from views.janelas import infos_programa
+import gspread
+import tomllib # para acessar o arquivo de configuraação
+
+# carregar dados dos servidores da base de dados do google docs
+def carregar_dados_googlesheets(pagina):
+    # acessando o arquivo de configuração
+    with open("models\conecta_gs\pyproject.toml", "rb") as f:
+        data = tomllib.load(f)
+
+    # CÓDIGO DA PLANILHA
+    CODE = data['CODE']['ID'] 
+
+    # ACESSO A PLANILHA
+    gc = gspread.service_account(filename='models/conecta_gs/listaservidores.json')
+
+    # ABRIR A PLANILHA
+    sh = gc.open_by_key(CODE)
+
+    # ACESSANDO A 'ABA' DESEJADA POR TÍTULO
+    ws_dados = sh.worksheet(pagina)
+    return ws_dados.get_all_records()
 
 # tratando preposições e conectivos em geral que aparecem o a inicial maiúscula
 def tratar_elementos_ligacao_txt(txt):
@@ -67,11 +88,11 @@ def tratar_elementos_ligacao_txt(txt):
 
 
 # pegando a matrícula dos servidores para registrar o elogio
-def selecionar_servidores(dados_servidores, servidores_elogio): 
+def selecionar_servidores(servidores_elogio): # dados_servidores, 
 
   try:
     # carregando dados
-    servidores = pd.read_csv(f'{dados_servidores}.csv', sep=",", encoding='latin-1')
+    servidores = carregar_dados_googlesheets('servidores') #pd.read_csv(f'{dados_servidores}.csv', sep=",", encoding='latin-1')
   except:
     # base de dados não encontrada (listaServidores.csv)
     infos_programa(4)
@@ -80,12 +101,17 @@ def selecionar_servidores(dados_servidores, servidores_elogio):
   lista_mat_siape = []
   log_servidores_nao_cadastrados = []
   log_servidores_cadastrados = []
-  for nome_serv, mat_siape in zip(list(servidores['NOME']), list(servidores['SIAPECAD'])):
-      dicionario_mat_siape[nome_serv] = mat_siape
+  lista_gspread = []
+
+  for registro in servidores: #zip(list(servidores['NOME']), list(servidores['SIAPECAD'])):
+      dicionario_mat_siape[registro["NOME"]] = registro["SIAPECAD"]
+      lista_gspread.append(registro['NOME'])
+      # É preciso pensar em um jeito de separar por cargo.
+      # Alguns servidores tem mais de uma matrícula, tem mais de um vínculo  
 
   for nome in servidores_elogio:
     nome_servidor = str(tratar_elementos_ligacao_txt(str(nome).strip())).upper()
-    if nome_servidor in list(servidores['NOME']):
+    if nome_servidor in lista_gspread: #list(servidores['NOME']):
         lista_mat_siape.append(dicionario_mat_siape.get(nome_servidor))
         log_servidores_cadastrados.append(f'{nome_servidor} - {dicionario_mat_siape.get(nome_servidor)}')
     else:

@@ -6,7 +6,7 @@ resposta = infos_programa(1)
 if resposta == "OK":
     try:
         dados_da_tela = tela_inicial()
-        servidores_selecionados = selecionar_servidores("listaServidores", dados_da_tela['SERVIDORES'])
+        servidores_selecionados = selecionar_servidores(dados_da_tela['SERVIDORES']) # "listaServidores", 
         if len(servidores_selecionados["SERV_LOCALIZADOS"]) == 0:
             gerar_log(servidores_selecionados["SERV_LOCALIZADOS"], servidores_selecionados["SERV_NAO_LOCALIZADOS"], dados_da_tela['SEI'])
         else:
