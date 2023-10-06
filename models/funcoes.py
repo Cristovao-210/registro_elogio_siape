@@ -4,6 +4,7 @@ import time
 from views.janelas import infos_programa
 import gspread
 import tomllib # para acessar o arquivo de configuraação
+from time import gmtime, strftime
 
 # conectar na planilha googleSheets
 def conectar_googlesheets():
@@ -122,12 +123,14 @@ def selecionar_servidores(dados_servidores, servidores_elogio): # dados_servidor
     infos_programa(4)
 
   dicionario_mat_siape = {}
+  dicionario_nome_servidores = {} # para registrar nome do último servidor cadastrado
   lista_mat_siape = []
   log_servidores_nao_cadastrados = []
   log_servidores_cadastrados = []
   lista_gspread = []
 
   for registro in servidores: #zip(list(servidores['NOME']), list(servidores['SIAPECAD'])):
+      dicionario_nome_servidores[registro["SIAPECAD"]] = registro["NOME"] 
       dicionario_mat_siape[registro["NOME"]] = registro["SIAPECAD"]
       lista_gspread.append(registro['NOME'])
       # É preciso pensar em um jeito de separar por cargo.
@@ -143,22 +146,27 @@ def selecionar_servidores(dados_servidores, servidores_elogio): # dados_servidor
 
   return {"MATRICULAS": lista_mat_siape,
           "SERV_NAO_LOCALIZADOS": log_servidores_nao_cadastrados,
-          "SERV_LOCALIZADOS": log_servidores_cadastrados} # retorna um dicionário com 3 listas dentro
+          "SERV_LOCALIZADOS": log_servidores_cadastrados,
+          "LOG_SERV_CADASTRADO":dicionario_nome_servidores} # retorna um dicionário com 3 listas dentro
 
+def log_cadastrados(processo_sei, dic_servidores):
+  processo_sei = str(processo_sei).replace("/","").replace("-","").replace(".","")
+  with open(f'elogios_CADASTRADOS_{processo_sei}.txt', 'a', encoding='utf-8') as na_lista:
+    na_lista.write(f'hora do registro / servidor cadastrado: {strftime("%H:%M:%S", gmtime())}\n')
 
 
 def gerar_log(serv_cadastrados, serv_nao_cadastrados, processo_sei):
   # log dos nomes que foram localizados na base de dados
   processo_sei = str(processo_sei).replace("/","").replace("-","").replace(".","")
   if len(serv_cadastrados) > 0:
-    with open(f'servidores_cadastrados_{processo_sei}.txt', 'a', encoding='utf-8') as na_lista:
-      na_lista.write(f'NOME DOS SERVIDORES QUE TIVERAM O ELOGIO REGISTRADO: \n\n')
+    with open(f'servidores_LOCALIZADOS_{processo_sei}.txt', 'a', encoding='utf-8') as na_lista:
+      na_lista.write(f'NOME DOS SERVIDORES QUE FORAM LOCALIZADOS NA BASE DE DADOS: \n\n')
       for serv_cad in serv_cadastrados:
         na_lista.write(f'{serv_cad}\n')
   # log dos nomes que NÃO foram localizados na base de dados
   if len(serv_nao_cadastrados) > 0:
-    with open(f'servidores_nao_cadastrados_{processo_sei}.txt', 'a', encoding='utf-8') as nao_lista:
-      nao_lista.write(f'O ELOGIO NAO FOI REGISTRADO PARA: \n\n')
+    with open(f'servidores_NÃO_LOCALIZADOS_{processo_sei}.txt', 'a', encoding='utf-8') as nao_lista:
+      nao_lista.write(f'O SERVIDORES LISTADOS NÃO FORAM LOCALIZADOS NA BASE DE DADOS E NÃO TIVERAM ELOGIO CADASTRADO: \n\n')
       for serv_nao_cad in serv_nao_cadastrados:
         nao_lista.write(f'{serv_nao_cad}\n')
   # Avisando sobre o relatório com o nome dos servidores NÃO CADASTRADOS
