@@ -5,25 +5,49 @@ from views.janelas import infos_programa
 import gspread
 import tomllib # para acessar o arquivo de configuraação
 
-# carregar dados dos servidores da base de dados do google docs
-def carregar_dados_googlesheets(pagina):
-    # acessando o arquivo de configuração
+# conectar na planilha googleSheets
+def conectar_googlesheets():
+  # acessando o arquivo de configuração
     with open("models\conecta_gs\pyproject.toml", "rb") as f:
         data = tomllib.load(f)
-
     # CÓDIGO DA PLANILHA
     CODE = data['CODE']['ID'] 
-
     # ACESSO A PLANILHA
     gc = gspread.service_account(filename='models/conecta_gs/listaservidores.json')
-
     # ABRIR A PLANILHA
-    sh = gc.open_by_key(CODE)
+    conexao = gc.open_by_key(CODE)
+    return conexao
 
+
+# carregar dados da base de dados do google docs
+def carregar_dados_googlesheets(conexao, pagina):
     # ACESSANDO A 'ABA' DESEJADA POR TÍTULO
-    ws_dados = sh.worksheet(pagina)
+    ws_dados = conexao.worksheet(pagina)
     return ws_dados.get_all_records()
 
+# gravar dados na planilha
+def inserir_dados_googlesheets(shseet_name_range, conexao, valores):
+    conexao.values_append(shseet_name_range,
+      {
+      'valueInputOption':'RAW'
+      }, 
+      {
+        'values': [valores]
+      }
+      )
+    print('Dados inseridos com sucesso...')
+
+# verificar se o servidor já tem aquele elogio cadastrado
+def verificar_sei_cadastrado(num_sei, mat, dados_planilha):
+    lista_processos_sei = []
+    for registro in dados_planilha:
+        if str(registro["SIAPECAD"]) == str(mat):
+            lista_processos_sei.append(str(registro["NUMERO_SEI"]))
+    if str(num_sei) in lista_processos_sei:
+        return True
+    else:
+        return False
+   
 # tratando preposições e conectivos em geral que aparecem o a inicial maiúscula
 def tratar_elementos_ligacao_txt(txt):
 
@@ -146,7 +170,7 @@ def gerar_log(serv_cadastrados, serv_nao_cadastrados, processo_sei):
     infos_programa(2)
 
 
-def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
+def registrar_elogio(conexao, dados_sei_cadastrado, num_sei, texto_elogio, matriculas_servidores):
 
   processo_sei = f"PROCESSO SEI Nº {num_sei}"
   sleep = 1
@@ -176,13 +200,15 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
   # digitando o comando para acessar a função desejada
   pyautogui.write(">CAINELOGIO")
   time.sleep(sleep)
+
   pyautogui.press("enter")
   time.sleep(sleep)
   # inserindo a matricula do servidor
   for matricula in matriculas_servidores:
 
-    # COLOCAR AQUI A VERIFICAÇÃO PARA SABER SE A MATRÍCULA JÁ TEM ESSE NÚMERO DE SEI REGISTRADO
-    # SE JÁ TIVER... CONTINUE...
+    # verificar se a martícula já tem esse elogio (número do SEI) cadastrado, se já tiver: continue
+    if verificar_sei_cadastrado(str(num_sei), str(matricula), dados_sei_cadastrado):
+      continue
 
     time.sleep(sleep)
     pyautogui.write(str(matricula))
@@ -214,7 +240,11 @@ def registrar_elogio(num_sei, texto_elogio, matriculas_servidores):
     pyautogui.write("S")
     time.sleep(sleep)
     pyautogui.press("enter")
-    # COLOCAR AQUI O REGISTRO DA MATRÍCULA E DO NÚMERO SEI
+
+    # registrar SIAPECAD e SEI para conferência
+    inserir_dados_googlesheets('sei_cadastrado', conexao, [str(matricula), str(num_sei)]) 
+    # log do último servidor cadastrado para casos de interrupção
+
 
   pyautogui.press('F3')
 
