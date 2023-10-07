@@ -147,12 +147,13 @@ def selecionar_servidores(dados_servidores, servidores_elogio): # dados_servidor
   return {"MATRICULAS": lista_mat_siape,
           "SERV_NAO_LOCALIZADOS": log_servidores_nao_cadastrados,
           "SERV_LOCALIZADOS": log_servidores_cadastrados,
-          "LOG_SERV_CADASTRADO":dicionario_nome_servidores} # retorna um dicionário com 3 listas dentro
+          "LOG_SERV_CADASTRADO": dicionario_nome_servidores} # retorna um dicionário com 3 listas dentro
 
-def log_cadastrados(processo_sei, dic_servidores):
+def log_cadastrados(processo_sei, dic_servidores, mat_scad):
   processo_sei = str(processo_sei).replace("/","").replace("-","").replace(".","")
+  servidor_cadastrado = dic_servidores.get(mat_scad)
   with open(f'elogios_CADASTRADOS_{processo_sei}.txt', 'a', encoding='utf-8') as na_lista:
-    na_lista.write(f'hora do registro / servidor cadastrado: {strftime("%H:%M:%S", gmtime())}\n')
+    na_lista.write(f'hora do registro / servidor cadastrado: {strftime("%H:%M:%S")} / {servidor_cadastrado}\n')
 
 
 def gerar_log(serv_cadastrados, serv_nao_cadastrados, processo_sei):
@@ -178,7 +179,7 @@ def gerar_log(serv_cadastrados, serv_nao_cadastrados, processo_sei):
     infos_programa(2)
 
 
-def registrar_elogio(conexao, dados_sei_cadastrado, num_sei, texto_elogio, matriculas_servidores):
+def registrar_elogio(conexao, dados_sei_cadastrado, num_sei, texto_elogio, matriculas_servidores, log_servidor):
 
   processo_sei = f"PROCESSO SEI Nº {num_sei}"
   sleep = 1
@@ -248,10 +249,11 @@ def registrar_elogio(conexao, dados_sei_cadastrado, num_sei, texto_elogio, matri
     pyautogui.write("S")
     time.sleep(sleep)
     pyautogui.press("enter")
-
+    time.sleep(sleep)
     # registrar SIAPECAD e SEI para conferência
     inserir_dados_googlesheets('sei_cadastrado', conexao, [str(matricula), str(num_sei)]) 
     # log do último servidor cadastrado para casos de interrupção
+    log_cadastrados(processo_sei, log_servidor, matricula)
 
 
   pyautogui.press('F3')
