@@ -6,6 +6,8 @@ import gspread
 import tomllib # para acessar o arquivo de configuraação
 from time import gmtime, strftime
 
+# 
+
 # conectar na planilha googleSheets
 def conectar_googlesheets():
   # acessando o arquivo de configuração
@@ -178,8 +180,13 @@ def gerar_log(serv_cadastrados, serv_nao_cadastrados, processo_sei):
   elif len(serv_cadastrados) == 0 and len(serv_nao_cadastrados) > 0:
     infos_programa(2)
 
+# função para capiturar sigla do terminal siape tela preta
+def configura_sigla_terminal_siape():
+	sigla = pyautogui.prompt(text='INSIRA A SILGA DO TERMINAL SIAPE TELA PRETA', title='ATENÇÃO!', default='')
+	return sigla.upper()
 
-def registrar_elogio(conexao, dados_sei_cadastrado, num_sei, texto_elogio, matriculas_servidores, log_servidor):
+
+def registrar_elogio(conexao, sigla_terminal, dados_sei_cadastrado, num_sei, texto_elogio, matriculas_servidores, log_servidor):
 
   processo_sei = f"PROCESSO SEI Nº {num_sei}"
   sleep = 1
@@ -199,7 +206,7 @@ def registrar_elogio(conexao, dados_sei_cadastrado, num_sei, texto_elogio, matri
   # intervalo entre os comandos
   pyautogui.PAUSE = 3
   # posicionando o mouse dentro do hod
-  janela = pygetwindow.getWindowsWithTitle(title='Terminal 3270 - A - AWVADS8R')[0]
+  janela = pygetwindow.getWindowsWithTitle(title=f'Terminal 3270 - A - {sigla_terminal}')[0]
   janela.activate()
   # Diminuindo o intervalo entre os comandos
   pyautogui.PAUSE = 0.3
