@@ -182,6 +182,9 @@ def gerar_log(serv_cadastrados, serv_nao_cadastrados, processo_sei):
 
 # função para capiturar sigla do terminal siape tela preta
 def configura_sigla_terminal_siape():
+
+  # criar arquivo txt com sigla do terminal para não digitar todas as vezes 
+
 	sigla = pyautogui.prompt(text='INSIRA A SILGA DO TERMINAL SIAPE TELA PRETA', title='ATENÇÃO!', default='')
 	return sigla.upper()
 
@@ -203,6 +206,12 @@ def registrar_elogio(conexao, sigla_terminal, dados_sei_cadastrado, num_sei, tex
     texto = str(elogio.replace(elogio[0:tam_linha], "")).upper()
     tam_linha += 60
     lista_texto.append(texto[0:60])
+    # Delimitando tamanho do elogio a 1800 caracteres
+    if len(lista_texto) > 30:
+      lista_texto.pop(30)
+      lista_texto.pop(29)
+      lista_texto.append(f'Restante do texto: SEI {num_sei}')
+      break
   # intervalo entre os comandos
   pyautogui.PAUSE = 3
   # posicionando o mouse dentro do hod
